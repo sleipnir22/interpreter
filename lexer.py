@@ -52,7 +52,7 @@ class Lexer:
 
         self.tokens.append(
             Token(
-                type=TokenType.EOF,
+                token_type=TokenType.EOF,
                 value='<eof>',
                 pos=self.pos
             )
@@ -68,7 +68,7 @@ class Lexer:
 
             num = int(text)
             return Token(
-                type=TokenType.INTEGER,
+                token_type=TokenType.INTEGER,
                 pos=self.pos,
                 value=num
             )
@@ -78,7 +78,7 @@ class Lexer:
                 text += self.current_char
                 self.advance()
             return Token(
-                type=TokenType.WHITESPACE,
+                token_type=TokenType.WHITESPACE,
                 pos=self.pos,
                 value=text
             )
@@ -87,13 +87,13 @@ class Lexer:
             previous_char = self.current_char
             self.advance()
             return Token(
-                type=TokenType(previous_char),
+                token_type=TokenType(previous_char),
                 value=previous_char,
                 pos=self.pos
             )
         else:
             return Token(
-                type=TokenType.BADTOKEN,
+                token_type=TokenType.BADTOKEN,
                 value='<error>',
                 pos=self.pos
             )

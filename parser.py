@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+'''from abc import ABC, abstractmethod
 from typing import Iterable, TypeVar
 
 
@@ -20,3 +20,4 @@ class BinaryExpressionSyntax(SyntaxNode):
 
 class Parser:
     pass
+    '''
