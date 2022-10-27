@@ -1,6 +1,5 @@
 from enum import Enum
 import typing as t
-
 from pydantic import BaseModel
 
 
@@ -11,6 +10,7 @@ class TokenType(str, Enum):
     NUMBER = 'number'
     ID = "id"
     EXPRESSION = 'expr'
+    OPERATOR = 'operator'
     WHITESPACE = 'whitespace'
     INTEGER = 'integer'
     PLUS = '+'
@@ -30,6 +30,9 @@ class Token(BaseModel):
     pos: int
     value: t.Any
 
+    def __repr__(self):
+        return f'[TOKEN TYPE: {self.token_type} VALUE: {self.value}]'
+
 
 class Lexer:
     def __init__(self, text: str):
@@ -46,7 +49,7 @@ class Lexer:
         except StopIteration as e:
             self.current_char = None
 
-    def generate_tokens(self):
+    def generate_tokens(self) -> list[Token]:
         while self.current_char is not None:
             self.tokens.append(self.next_token())
 
