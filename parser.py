@@ -51,19 +51,46 @@ class ParenthesizedExpressionSyntax(ExpressionSyntax):
         yield self.rpar_token
 
 
+class CommandExpressionSyntax(ExpressionSyntax):
+    command_op: Token
+    id_token: Token
+    value: Token
+    image: Token
+    token_type = TokenType.COMMAND
+
+
 class Parser:
     def __init__(self, text):
         lex = Lexer(text)
-        tokens = lex.generate_tokens()
+        self.current_token = None
+        self.tokens = iter(lex.generate_tokens())
+        self.pos = 0
+        self.advance()
+
+    def advance(self) -> Token:
+        try:
+            self.pos += 1
+            self.current_token = next(self.tokens)
+        except StopIteration as e:
+            self.current_token = Token(
+                value=None,
+                type=TokenType.BADTOKEN,
+                pos=self.pos
+            )
+        return self.current_token
 
     def parse(self):
-        expr = self.term()
+        expr = self.parse_command_expr()
 
     def next_token(self):
         pass
 
-    def term(self):
-        pass
+    def parse_command_expr(self):
+        command = self.parse_command()
+
+    def parse_command(self):
+        if self.current_token.type == TokenType.COMMAND:
+            pass
 
     def factor(self):
         pass

@@ -4,9 +4,10 @@ from pydantic import BaseModel
 
 
 class TokenType(str, Enum):
-    CREATE = 'create'
-    DELETE = 'delete'
-    UPDATE = 'update'
+    ADD = 'add'
+    DEL = 'del'
+    UPD = 'upd'
+    RETR = 'retr'
     NUMBER = 'number'
     ID = "id"
     EXPRESSION = 'expr'
@@ -24,6 +25,7 @@ class TokenType(str, Enum):
     EOF = '<eof>'
     EOL = '<eol>'
     PARENEXPR = '<paren_expr>'
+    COMMAND = 'command'
 
 
 class Token(BaseModel):
