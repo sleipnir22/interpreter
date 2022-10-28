@@ -23,6 +23,7 @@ class TokenType(str, Enum):
     BADTOKEN = '<error>'
     EOF = '<eof>'
     EOL = '<eol>'
+    PARENEXPR = '<paren_expr>'
 
 
 class Token(BaseModel):
