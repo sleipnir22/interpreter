@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
-from enum import Enum
-from typing import Iterable, TypeVar
+from typing import Iterable
 
 from pydantic import BaseModel
 
 from lexer import TokenType, Token, Lexer
+from syntax_tree import SyntaxTree
 
 
 class SyntaxNode(ABC, BaseModel):
@@ -62,12 +62,12 @@ class CommandExpressionSyntax(ExpressionSyntax):
 class Parser:
     def __init__(self, text):
         lex = Lexer(text)
-        self.current_token = None
+        self.current_token: Token = Token()
         self.tokens = iter(lex.generate_tokens())
         self.pos = 0
         self.advance()
 
-    def advance(self) -> Token:
+    def advance(self):
         try:
             self.pos += 1
             self.current_token = next(self.tokens)
@@ -80,17 +80,47 @@ class Parser:
         return self.current_token
 
     def parse(self):
-        expr = self.parse_command_expr()
+        expr = self.term()
+        eof_token = self.match(TokenType.EOF)
+        return SyntaxTree(expr, eof_token)
 
-    def next_token(self):
-        pass
+    def term(self) -> ExpressionSyntax:
+        left = self.factor()
+        while self.current_token.token_type in (TokenType.PLUS, TokenType.MINUS):
+            operator_token = self.advance()
+            right = self.factor()
+            left = BinaryExpressionSyntax(left, operator_token, right)
 
-    def parse_command_expr(self):
-        command = self.parse_command()
+        return left
 
-    def parse_command(self):
-        if self.current_token.type == TokenType.COMMAND:
+    def factor(self) -> ExpressionSyntax:
+        left = self.primary_expression()
+        while self.current_token.token_type in (TokenType.MULTIPLICATION, TokenType.DIVISION):
+            operator_token = self.advance()
+            right = self.primary_expression()
+            left = BinaryExpressionSyntax(left, operator_token, right)
+
+        return left
+
+    def primary_expression(self):
+        if self.current_token.token_type == TokenType.LPAREN:
+            left = self.advance()
+
+            expression = self.expression()
+
+            right = self.match(TokenType.RPAREN)
+            return ParenthesizedExpressionSyntax(left, expression, right)
+
+        number_token = self.match(TokenType.NUMBER)
+        return NumberExpressionSyntax(number_token=number_token)
+
+    def expression(self):
+        return self.term()
+
+    def match(self, token_type: TokenType):
+        if self.current_token.token_type == token_type:
+            return self.advance()
+        else:
+            #BAD TOKEN!!! Exception
             pass
 
-    def factor(self):
-        pass

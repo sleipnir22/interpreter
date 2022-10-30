@@ -1,10 +1,9 @@
-from pprint import pprint
-from loguru import logger
-from lexer import Lexer
+from parser import Parser
+from syntax_tree import SyntaxTree
 
 if __name__ == '__main__':
     while True:
         text = input()
-        lex = Lexer(text)
-        tokens = lex.generate_tokens()
-        pprint(tokens)
+        parser = Parser(text)
+        parsed_text = parser.parse()
+        print(parsed_text)

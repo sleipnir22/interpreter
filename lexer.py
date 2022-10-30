@@ -26,12 +26,13 @@ class TokenType(str, Enum):
     EOL = '<eol>'
     PARENEXPR = '<paren_expr>'
     COMMAND = 'command'
+    NULL = 'null'
 
 
 class Token(BaseModel):
-    token_type: TokenType
-    pos: int
-    value: t.Any
+    token_type: TokenType = TokenType.NULL
+    pos: int = -1
+    value: t.Any = ''
 
     def __repr__(self):
         return f'[TOKEN TYPE: {self.token_type} VALUE: {self.value}]'
