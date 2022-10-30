@@ -70,6 +70,7 @@ class Parser:
     def advance(self):
         try:
             self.pos += 1
+            current_token = self.current_token
             self.current_token = next(self.tokens)
         except StopIteration as e:
             self.current_token = Token(
@@ -77,9 +78,9 @@ class Parser:
                 type=TokenType.BADTOKEN,
                 pos=self.pos
             )
-        return self.current_token
+        return current_token
 
-    def parse(self):
+    def parse(self) -> SyntaxTree:
         expr = self.term()
         eof_token = self.match(TokenType.EOF)
         return SyntaxTree(expr, eof_token)
@@ -89,7 +90,8 @@ class Parser:
         while self.current_token.token_type in (TokenType.PLUS, TokenType.MINUS):
             operator_token = self.advance()
             right = self.factor()
-            left = BinaryExpressionSyntax(left, operator_token, right)
+            left = BinaryExpressionSyntax(left=left, operator=operator_token, right=right,
+                                          token_type=TokenType.OPERATOR)
 
         return left
 
@@ -98,7 +100,8 @@ class Parser:
         while self.current_token.token_type in (TokenType.MULTIPLICATION, TokenType.DIVISION):
             operator_token = self.advance()
             right = self.primary_expression()
-            left = BinaryExpressionSyntax(left, operator_token, right)
+            left = BinaryExpressionSyntax(left=left, operator=operator_token, right=right,
+                                          token_type=TokenType.OPERATOR)
 
         return left
 
@@ -109,9 +112,10 @@ class Parser:
             expression = self.expression()
 
             right = self.match(TokenType.RPAREN)
-            return ParenthesizedExpressionSyntax(left, expression, right)
+            return ParenthesizedExpressionSyntax(lpar_token=left, expression=expression, rpar_token=right,
+                                                 token_type=TokenType.PARENEXPR)
 
-        number_token = self.match(TokenType.NUMBER)
+        number_token = self.match(TokenType.INTEGER)
         return NumberExpressionSyntax(number_token=number_token)
 
     def expression(self):
