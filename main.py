@@ -1,6 +1,6 @@
+from interpreter import Interpreter
 from lexer import Token
-from parser import Parser, ExpressionSyntax, SyntaxNode
-from syntax_tree import SyntaxTree
+from parser import Parser, SyntaxNode
 
 
 def pretty_print(node: SyntaxNode, indent='', is_last=True):
@@ -22,17 +22,12 @@ def pretty_print(node: SyntaxNode, indent='', is_last=True):
         for child in node.get_children():
             pretty_print(child, indent, child == last_child)
 
-def some_func():
-    yield True
-    yield False
-    yield 1
-
 
 if __name__ == '__main__':
     while True:
-        text = input()
+        text = input('>>> ')
         parser = Parser(text)
         parsed_text = parser.parse()
-        something = some_func()
-        pretty_print(parsed_text.root)
-        pass
+        # pretty_print(parsed_text.root)
+        interpreter = Interpreter(parsed_text.root)
+        print(interpreter.interprete())

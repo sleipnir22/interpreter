@@ -58,6 +58,9 @@ class CommandExpressionSyntax(ExpressionSyntax):
     image: Token
     token_type = TokenType.COMMAND
 
+    def get_children(self) -> Iterable['SyntaxNode']:
+        pass
+
 
 class Parser:
     def __init__(self, text):
@@ -67,11 +70,13 @@ class Parser:
         self.pos = 0
         self.advance()
 
-    def advance(self):
+    def advance(self) -> Token:
         try:
             self.pos += 1
             current_token = self.current_token
             self.current_token = next(self.tokens)
+            if self.current_token.token_type == TokenType.WHITESPACE:
+                self.advance()
         except StopIteration as e:
             self.current_token = Token(
                 value=None,
@@ -90,8 +95,12 @@ class Parser:
         while self.current_token.token_type in (TokenType.PLUS, TokenType.MINUS):
             operator_token = self.advance()
             right = self.factor()
-            left = BinaryExpressionSyntax(left=left, operator=operator_token, right=right,
-                                          token_type=TokenType.OPERATOR)
+            left = BinaryExpressionSyntax(
+                left=left,
+                operator=operator_token,
+                right=right,
+                token_type=TokenType.OPERATOR
+            )
 
         return left
 
@@ -100,8 +109,12 @@ class Parser:
         while self.current_token.token_type in (TokenType.MULTIPLICATION, TokenType.DIVISION):
             operator_token = self.advance()
             right = self.primary_expression()
-            left = BinaryExpressionSyntax(left=left, operator=operator_token, right=right,
-                                          token_type=TokenType.OPERATOR)
+            left = BinaryExpressionSyntax(
+                left=left,
+                operator=operator_token,
+                right=right,
+                token_type=TokenType.OPERATOR
+            )
 
         return left
 
@@ -112,8 +125,12 @@ class Parser:
             expression = self.expression()
 
             right = self.match(TokenType.RPAREN)
-            return ParenthesizedExpressionSyntax(lpar_token=left, expression=expression, rpar_token=right,
-                                                 token_type=TokenType.PARENEXPR)
+            return ParenthesizedExpressionSyntax(
+                lpar_token=left,
+                expression=expression,
+                rpar_token=right,
+                token_type=TokenType.PARENEXPR
+            )
 
         number_token = self.match(TokenType.INTEGER)
         return NumberExpressionSyntax(number_token=number_token)
