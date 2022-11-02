@@ -1,16 +1,17 @@
 from enum import Enum
 import typing as t
-
 from pydantic import BaseModel
 
 
 class TokenType(str, Enum):
-    CREATE = 'create'
-    DELETE = 'delete'
-    UPDATE = 'update'
+    ADD = 'add'
+    DEL = 'del'
+    UPD = 'upd'
+    RETR = 'retr'
     NUMBER = 'number'
     ID = "id"
     EXPRESSION = 'expr'
+    OPERATOR = 'operator'
     WHITESPACE = 'whitespace'
     INTEGER = 'integer'
     PLUS = '+'
@@ -23,12 +24,18 @@ class TokenType(str, Enum):
     BADTOKEN = '<error>'
     EOF = '<eof>'
     EOL = '<eol>'
+    PARENEXPR = '<paren_expr>'
+    COMMAND = 'command'
+    NULL = 'null'
 
 
 class Token(BaseModel):
-    token_type: TokenType
-    pos: int
-    value: t.Any
+    token_type: TokenType = TokenType.NULL
+    pos: int = -1
+    value: t.Any = ''
+
+    def __repr__(self):
+        return f'[TOKEN TYPE: {self.token_type} VALUE: {self.value}]'
 
 
 class Lexer:
@@ -46,7 +53,7 @@ class Lexer:
         except StopIteration as e:
             self.current_char = None
 
-    def generate_tokens(self):
+    def generate_tokens(self) -> list[Token]:
         while self.current_char is not None:
             self.tokens.append(self.next_token())
 
