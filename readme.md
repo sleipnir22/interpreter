@@ -1,4 +1,4 @@
-# VK chatbot Interpreter v 0.1
+# Basic interpreter
 
 ## GRAMMAR
 ### evaluator grammar rules:
